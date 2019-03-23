@@ -1,0 +1,19 @@
+## Title: Multiboxer_Accounting
+## Notes: Accounting addon for multiboxers
+## Version: 8.1.0
+## Author: PizzaDudeZ
+## Interface: 81000
+## SavedVariables: Multiboxer_AccountingDB
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceComm-3.0\AceComm-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceHook-3.0\AceHook-3.0.xml
+Libs\AceTimer-3.0\AceTimer-3.0.xml
+Libs\StdUi\StdUi.xml
+
+main.lua
