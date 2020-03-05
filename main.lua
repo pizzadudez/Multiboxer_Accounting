@@ -10,16 +10,23 @@ _G[addonName] = Accounting
 function Accounting:OnEnable()
 	self:InitDatabase() -- deal with SavedVariables	
 	self:RegisterEvent('MAIL_SHOW')
+	self:RegisterEvent('MAIL_CLOSED')
 	self:RegisterEvent('MAIL_INBOX_UPDATE')
 end
 
 function Accounting:MAIL_SHOW()
+	self.mailOpen = true
+
 	if not self.inboxUpdate then
 		self:ScheduleTimer('MAIL_SHOW', 0.3)
 		return
 	end
 	self:StoreMailMoney()
 	self.inboxUpdate = false
+end
+
+function Accounting:MAIL_CLOSED()
+	self.mailOpen = false
 end
 
 function Accounting:MAIL_INBOX_UPDATE()
@@ -38,6 +45,13 @@ end
 
 function Accounting:PLAYER_MONEY()
 	self.charData.money.inventory = GetMoney()
+	print(self.mailOpen)
+	if self.mailOpen then
+		print('checking')
+		self:StoreMailMoney()
+	else
+		print('not checking')
+	end
 end
 
 function Accounting:PLAYER_LOGOUT()
@@ -52,6 +66,7 @@ function Accounting:PLAYER_LOGOUT()
 end
 
 function Accounting:StoreMailMoney()
+	print('checking mail money')
 	CheckInbox()
 	local numMails, _ = GetInboxNumItems()
 	local mailMoney = 0
@@ -66,6 +81,7 @@ function Accounting:StoreMailMoney()
 
 	if mailMoney < 0 then mailMoney = nil end
 	self.charData.money.mail = mailMoney
+	print(mailMoney)
 end
 
 function Accounting:InitDatabase()
@@ -85,6 +101,15 @@ function Accounting:InitDatabase()
 	
 	self:InitMoneyInfo() 
 	self:RegisterEvent('PLAYER_LOGOUT')
+
+	-- remove mail info
+	--[[
+	for realm, realmData in pairs(self.db) do
+		for char, charData in pairs(realmData) do
+			charData.money.mail = nil
+		end
+	end
+	]]
 end
 
 function Accounting:InitMoneyInfo()
@@ -93,7 +118,8 @@ function Accounting:InitMoneyInfo()
 
 	-- store inventory money
 	local level = UnitLevel('unit') < 25 -- lower than lvl 25
-	local inventory = GetMoney() > 500000000 -- more than 50k gold
+	--local inventory = GetMoney() > 500000000 -- more than 50k gold
+	local inventory = true
 	if level and inventory then
 		money.inventory = GetMoney()
 		self:RegisterEvent('PLAYER_MONEY')
